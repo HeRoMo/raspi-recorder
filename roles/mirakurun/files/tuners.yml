@@ -1,0 +1,19 @@
+- name: PX-Q1UD-1_1
+  types:
+    - GR
+  command: recdvb --b25 --strip --dev 0 <channel> - -
+
+- name: PX-Q1UD-1_2
+  types:
+    - GR
+  command: recdvb --b25 --strip --dev 1 <channel> - -
+
+- name: PX-Q1UD-1_3
+  types:
+    - GR
+  command: recdvb --b25 --strip --dev 2 <channel> - -
+
+- name: PX-Q1UD-1_4
+  types:
+    - GR
+  command: recdvb --b25 --strip --dev 3 <channel> - -

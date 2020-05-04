@@ -1,0 +1,3 @@
+- name: restart mirakurun
+  shell:
+    cmd: mirakurun restart

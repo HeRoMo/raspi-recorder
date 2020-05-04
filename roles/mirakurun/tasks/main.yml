@@ -1,0 +1,30 @@
+- name: Install pm2
+  npm:
+    name: pm2
+    global: true
+
+- name: Install mirakurun
+  npm:
+    name: mirakurun
+    global: true
+    production: true
+
+- name: init mirakurun
+  shell:
+    cmd: mirakurun init
+
+- name: copy tuners.yml
+  copy:
+    src: tuners.yml
+    dest: /usr/local/etc/mirakurun/tuners.yml
+    owner: root
+    group: root
+    mode: '0644'
+    backup: yes
+  notify: restart mirakurun
+
+# Connection refused でうまく動かない
+# - name: channels scan
+#   shell:
+#     cmd: curl -L -X PUT http://raspi4.local:40772/api/config/channels/scan
+#   notify: restart mirakurun

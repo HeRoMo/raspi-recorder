@@ -8,5 +8,7 @@
       - g++ # for libarib25
       - automake # for recdvb
       - autoconf # for recdvb
+      - nodejs # for Mirakurun
+      - npm # for Mirakurun
     cache_valid_time: 3600
     update_cache: yes
