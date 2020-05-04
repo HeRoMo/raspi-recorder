@@ -1,0 +1,12 @@
+- name: install apt-packages
+  apt:
+    name:
+      - vim
+      - git
+      - build-essential
+      - cmake # for libarib25
+      - g++ # for libarib25
+      - automake # for recdvb
+      - autoconf # for recdvb
+    cache_valid_time: 3600
+    update_cache: yes

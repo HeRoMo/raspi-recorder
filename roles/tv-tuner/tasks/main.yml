@@ -1,0 +1,3 @@
+- name: Install firmware-siano
+  apt:
+    name: firmware-siano

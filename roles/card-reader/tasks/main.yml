@@ -1,0 +1,15 @@
+- name: Install pcscd
+  apt:
+    name: pcscd
+
+- name: Install libpcsclite-dev
+  apt:
+    name: libpcsclite-dev
+
+- name: Install libccid
+  apt:
+    name: libccid
+
+- name: Install pcsc-tools
+  apt:
+    name: pcsc-tools

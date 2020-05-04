@@ -1,0 +1,20 @@
+- name: Checkout libarib25
+  git:
+    repo: https://github.com/stz2012/libarib25.git
+    dest: /srv/tmp/libarib25
+
+- name: cmake libarib25
+  shell:
+    cmd: cmake .
+    chdir: /srv/tmp/libarib25
+    creates: Makefile
+
+- name: make libarib25
+  make:
+    chdir: /srv/tmp/libarib25
+
+- name: make install libarib25
+  make:
+    chdir: /srv/tmp/libarib25
+    target: install
+  become: yes
