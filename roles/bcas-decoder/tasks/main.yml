@@ -1,20 +1,30 @@
 - name: Checkout libarib25
   git:
     repo: https://github.com/stz2012/libarib25.git
-    dest: /srv/tmp/libarib25
+    dest: "{{ libarib25.home }}"
 
 - name: cmake libarib25
   shell:
     cmd: cmake .
-    chdir: /srv/tmp/libarib25
+    chdir: "{{ libarib25.home }}"
     creates: Makefile
+
+- stat:
+    path: "{{ libarib25.home }}/libarib25.so"
+  register: sofile
 
 - name: make libarib25
   make:
-    chdir: /srv/tmp/libarib25
+    chdir: "{{ libarib25.home }}"
+  when: not sofile.stat.exists
+
+- stat:
+    path: "{{ libarib25.home }}/install_manifest.txt"
+  register: manifest
 
 - name: make install libarib25
   make:
-    chdir: /srv/tmp/libarib25
+    chdir: "{{ libarib25.home }}"
     target: install
   become: yes
+  when: not manifest.stat.exists
