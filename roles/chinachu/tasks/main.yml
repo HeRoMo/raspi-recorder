@@ -32,11 +32,17 @@
     dest: /srv/tmp/Chinachu/config.json
     remote_src: yes
 
-- name: modify config.json
+- name: modify uid in config.json
   lineinfile:
     path: /srv/tmp/Chinachu/config.json
     regexp: '"uid": '
     line: '  "uid": "pi",'
+
+# - name: modify vaapiEnabled in config.json
+#   lineinfile:
+#     path: /srv/tmp/Chinachu/config.json
+#     regexp: '"vaapiEnabled": '
+#     line: '  "vaapiEnabled": true,'
 
 - name: create symlink to Node.js
   file:
@@ -46,6 +52,16 @@
   with_items:
     - node
     - npm
+
+- name: delete Chinachu ffmpeg
+  file:
+    path: /srv/tmp/Chinachu/usr/bin/ffmpeg
+    state: absent
+  with_items:
+    - avconv
+    - avprobe
+    - ffmpeg
+    - ffprobe
 
 - name: chown Chinachu
   file:

@@ -10,5 +10,6 @@
       - autoconf # for recdvb
       - nodejs # for Mirakurun
       - npm # for Mirakurun
+      - ffmpeg
     cache_valid_time: 3600
     update_cache: yes
