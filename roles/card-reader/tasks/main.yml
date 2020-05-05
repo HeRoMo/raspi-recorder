@@ -1,15 +1,9 @@
-- name: Install pcscd
+- name: install apt-packages
   apt:
-    name: pcscd
-
-- name: Install libpcsclite-dev
-  apt:
-    name: libpcsclite-dev
-
-- name: Install libccid
-  apt:
-    name: libccid
-
-- name: Install pcsc-tools
-  apt:
-    name: pcsc-tools
+    name:
+      - pcscd
+      - libpcsclite-dev
+      - libccid
+      - pcsc-tools
+    cache_valid_time: 3600
+    update_cache: yes
