@@ -1,27 +1,33 @@
 - name: unarchive recdvb-1.3.2.tgz
   unarchive:
     src: http://www13.plala.or.jp/sat/recdvb/recdvb-1.3.2.tgz
-    dest: /srv/tmp/
+    dest: /opt/
     remote_src: yes
 
 - name: Run autogen.sh
   shell:
     cmd: ./autogen.sh
-    chdir: /srv/tmp/recdvb-1.3.2
+    chdir: "{{ recdvb.home }}"
     creates: configure
 
 - name: Run configure
   shell:
     cmd: ./configure --enable-b25
-    chdir: /srv/tmp/recdvb-1.3.2
+    chdir: "{{ recdvb.home }}"
     creates: Makefile
 
 - name: make recdvb
   make:
-    chdir: /srv/tmp/recdvb-1.3.2
+    chdir: "{{ recdvb.home }}"
+
+- shell:
+    cmd: which recdvb || true
+  changed_when: False
+  register: cmd_recdvb
 
 - name: make install recdvb
   make:
-    chdir: /srv/tmp/recdvb-1.3.2
+    chdir: "{{ recdvb.home }}"
     target: install
   become: yes
+  when: cmd_recdvb.stdout == ""
