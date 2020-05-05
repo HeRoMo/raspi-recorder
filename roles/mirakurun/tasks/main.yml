@@ -7,11 +7,8 @@
   npm:
     name: mirakurun
     global: true
+    unsafe_perm: true
     production: true
-
-- name: init mirakurun
-  shell:
-    cmd: mirakurun init
 
 - name: copy tuners.yml
   copy:
@@ -21,10 +18,6 @@
     group: root
     mode: '0644'
     backup: yes
-  notify: restart mirakurun
-
-# Connection refused でうまく動かない
-# - name: channels scan
-#   shell:
-#     cmd: curl -L -X PUT http://raspi4.local:40772/api/config/channels/scan
-#   notify: restart mirakurun
+  notify:
+    - restart_mirakurun
+    - scan_channels

@@ -1,3 +1,8 @@
-- name: restart mirakurun
+- name: restart_mirakurun
   shell:
     cmd: mirakurun restart
+
+- name: scan_channels
+  shell:
+    cmd: "curl -L -X PUT http://{{inventory_hostname}}:40772/api/config/channels/scan"
+  notify: restart_mirakurun
