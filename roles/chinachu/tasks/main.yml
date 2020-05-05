@@ -1,0 +1,64 @@
+- name: install vainfo
+  apt:
+    name: vainfo
+    cache_valid_time: 3600
+    update_cache: yes
+
+- name: Checkout Chinachu
+  git:
+    repo: https://github.com/Chinachu/Chinachu.git
+    dest: /srv/tmp/Chinachu
+    force: yes
+
+- pip:
+    name: pexpect
+
+- name: Install Chinachu
+  expect:
+    command: ./chinachu installer
+    chdir: /srv/tmp/Chinachu
+    responses:
+      "what do you install": "1"
+    creates: /srv/tmp/Chinachu/usr
+
+- name: create rules.json
+  copy:
+    content: []
+    dest: /srv/tmp/Chinachu/rules.json
+
+- name: copy config.json
+  copy:
+    src: /srv/tmp/Chinachu/config.sample.json
+    dest: /srv/tmp/Chinachu/config.json
+    remote_src: yes
+
+- name: modify config.json
+  lineinfile:
+    path: /srv/tmp/Chinachu/config.json
+    regexp: '"uid": '
+    line: '  "uid": "pi",'
+
+- name: create symlink to Node.js
+  file:
+    src: /usr/bin/{{ item }}
+    dest: /srv/tmp/Chinachu/.nave/{{ item }}
+    state: link
+  with_items:
+    - node
+    - npm
+
+- name: chown Chinachu
+  file:
+    path: /srv/tmp/Chinachu/
+    state: directory
+    recurse: yes
+    owner: pi
+    group: pi
+
+- name: auto start Chinachu
+  shell: |
+    pm2 startup
+    pm2 start processes.json
+    pm2 save
+  args:
+    chdir: /srv/tmp/Chinachu/
