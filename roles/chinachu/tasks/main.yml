@@ -7,55 +7,57 @@
 - name: Checkout Chinachu
   git:
     repo: https://github.com/Chinachu/Chinachu.git
-    dest: /srv/tmp/Chinachu
+    dest: "{{ chinachu.home }}"
     force: yes
-
-- pip:
-    name: pexpect
 
 - name: Install Chinachu
   expect:
     command: ./chinachu installer
-    chdir: /srv/tmp/Chinachu
+    chdir: "{{ chinachu.home }}"
     responses:
       "what do you install": "1"
-    creates: /srv/tmp/Chinachu/usr
-
-- name: create rules.json
-  copy:
-    content: []
-    dest: /srv/tmp/Chinachu/rules.json
-
-- name: copy config.json
-  copy:
-    src: /srv/tmp/Chinachu/config.sample.json
-    dest: /srv/tmp/Chinachu/config.json
-    remote_src: yes
-
-- name: modify uid in config.json
-  lineinfile:
-    path: /srv/tmp/Chinachu/config.json
-    regexp: '"uid": '
-    line: '  "uid": "pi",'
-
-# - name: modify vaapiEnabled in config.json
-#   lineinfile:
-#     path: /srv/tmp/Chinachu/config.json
-#     regexp: '"vaapiEnabled": '
-#     line: '  "vaapiEnabled": true,'
+    creates: "{{ chinachu.home }}/usr"
 
 - name: create symlink to Node.js
   file:
-    src: /usr/bin/{{ item }}
-    dest: /srv/tmp/Chinachu/.nave/{{ item }}
+    src: "/usr/bin/{{ item }}"
+    dest: "{{ chinachu.home }}/.nave/{{ item }}"
     state: link
   with_items:
     - node
     - npm
 
+- name: create rules.json
+  copy:
+    content: []
+    dest: "{{ chinachu.home }}/rules.json"
+
+- stat:
+    path: "{{ chinachu.home }}/config.json"
+  register: config_json
+
+- name: copy config.json
+  copy:
+    src: "{{ chinachu.home }}/config.sample.json"
+    dest: "{{ chinachu.home }}/config.json"
+    remote_src: yes
+  when: not config_json.stat.exists
+
+- name: modify uid in config.json
+  lineinfile:
+    path: "{{ chinachu.home }}/config.json"
+    regexp: '"uid": '
+    line: '  "uid": "pi",'
+
+# # - name: modify vaapiEnabled in config.json
+# #   lineinfile:
+# #     path: /srv/tmp/Chinachu/config.json
+# #     regexp: '"vaapiEnabled": '
+# #     line: '  "vaapiEnabled": true,'
+
 - name: delete Chinachu ffmpeg
   file:
-    path: /srv/tmp/Chinachu/usr/bin/ffmpeg
+    path: "{{ chinachu.home }}/usr/bin/{{ item }}"
     state: absent
   with_items:
     - avconv
@@ -63,13 +65,22 @@
     - ffmpeg
     - ffprobe
 
+- stat:
+    path: "{{ chinachu.home }}"
+  register: chinachu_home
+
 - name: chown Chinachu
   file:
-    path: /srv/tmp/Chinachu/
+    path: "{{ chinachu.home }}"
     state: directory
     recurse: yes
     owner: pi
     group: pi
+  when: chinachu_home.stat.pw_name != "pi"
+
+- shell:
+    cmd: pm2 ls|grep chinachu-wui|cut -d' ' -f 6 || true
+  register: pm2_chinachu_wui
 
 - name: auto start Chinachu
   shell: |
@@ -77,4 +88,5 @@
     pm2 start processes.json
     pm2 save
   args:
-    chdir: /srv/tmp/Chinachu/
+    chdir: "{{ chinachu.home }}"
+  when: pm2_chinachu_wui.stdout != "chinachu-wui"

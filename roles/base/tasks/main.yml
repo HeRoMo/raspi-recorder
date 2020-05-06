@@ -4,6 +4,8 @@
       - vim
       - git
       - build-essential
+      - python-pip
+      - python3-pip
       - cmake # for libarib25
       - g++ # for libarib25
       - automake # for recdvb
@@ -13,3 +15,6 @@
       - ffmpeg
     cache_valid_time: 3600
     update_cache: yes
+
+- pip:
+    name: pexpect
